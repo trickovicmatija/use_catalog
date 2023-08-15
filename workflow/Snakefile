@@ -5,7 +5,7 @@ configfile: f"{os.path.dirname(workflow.snakefile)}/../config/default_config.yam
 
 SAMPLES, = glob_wildcards("output/trimmed_reads/{sample}")
 
-if config['trim_reads'] == 'false':
+if config['trim_reads'] == False:
     localrules: trim_reads
 include: "sample_table.smk"
 
