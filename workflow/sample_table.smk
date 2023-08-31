@@ -100,11 +100,12 @@ def get_quality_controlled_reads(wildcards):
     """Gets quality controlled reads. Two files if paired end and only one if single end."""
 
     QC_Headers = ["Reads_QC_" + f for f in MULTIFILE_FRACTIONS]
-    sample_dir_path = "/".join(config["sample_table"].split("/")[:-1]) + "/"
-    return [
-        sample_dir_path + s
-        for s in get_files_from_sampleTable(wildcards.sample, QC_Headers)
-    ]
+    return get_files_from_sampleTable(wildcards.sample, QC_Headers)
+    # sample_dir_path = "/".join(config["sample_table"].split("/")[:-1]) + "/"
+    # return [
+    #     sample_dir_path + s
+    #     for s in get_files_from_sampleTable(wildcards.sample, QC_Headers)
+    # ]
 
 
 # except FileNotInSampleTableException:
