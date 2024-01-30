@@ -7,6 +7,7 @@ scaled_downsample: 1000
 threshold_bp: 15000
 
 #RESOURCES
-mem_mb: 24000
+mem_default: 24 #GB
+mem_large: 250 #GB
 time_min: 120
 threads: 8

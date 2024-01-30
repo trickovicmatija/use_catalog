@@ -14,6 +14,7 @@ rule all_gather:
 rule sketch_reads:
     input:
         get_quality_controlled_reads,
+        
     output:
         sketch="Intermediate/subspecies/sketch_samples/{sample}.sig",
     conda:
@@ -22,13 +23,13 @@ rule sketch_reads:
         "log/subspecies_profiler/sketch_reads/{sample}.log",
     threads: config["threads"]
     resources:
-        mem_mb=config["mem_mb"],
+        mem_mb=config["mem_default"]*1024,
         time_min=config["time_min"],
         cpus_per_task=config["threads"],
     params:
         kmer_len=config["kmer_len"],
         scaled=config["scaled"],
-        mem=int(config["mem_mb"]) * 1000000 * 0.9,
+        mem=config["mem_default"]*1024 * 1000000 * 0.9, # bytes?
     shell:
         "mkdir -p output/sketch_samples "
         " ; \n "
@@ -50,7 +51,7 @@ rule gather:
         "log/subspecies_profiler/gather/{sample}.log",
     threads: 1
     resources:
-        mem_mb=int(config["mem_mb"]),
+        mem_mb=config["mem_default"],
         time_min=int(config["time_min"]),
     params:
         kmer_len=config["kmer_len"],
