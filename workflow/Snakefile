@@ -3,11 +3,13 @@ import os
 
 configfile: f"{os.path.dirname(workflow.snakefile)}/../config/default_config.yaml"
 
+
 include: "sample_table.smk"
+
 
 rule all_gather:
     input:
-        expand("Intermediate/subspecies/gather/{sample}.csv", sample=SAMPLES)
+        expand("Intermediate/subspecies/gather/{sample}.csv", sample=SAMPLES),
 
 
 rule sketch_reads:
@@ -23,7 +25,7 @@ rule sketch_reads:
     resources:
         mem_mb=config["mem_mb"],
         time_min=config["time_min"],
-        cpus_per_task=config['threads']
+        cpus_per_task=config["threads"],
     params:
         kmer_len=config["kmer_len"],
         scaled=config["scaled"],
@@ -37,25 +39,26 @@ rule sketch_reads:
         " --merge {wildcards.sample} "
         " -o {output.sketch} &> {log}"
 
+
 rule gather:
     input:
-        sample_sketch= rules.sketch_reads.output
+        sample_sketch=rules.sketch_reads.output,
     output:
-        gather="Intermediate/subspecies/gather/{sample}.csv"
+        gather="Intermediate/subspecies/gather/{sample}.csv",
     conda:
         "envs/sourmash.yaml"
     log:
         "log/subspecies_profiler/gather/{sample}.log",
-    threads: 1,
+    threads: 1
     resources:
         mem_mb=int(config["mem_mb"]),
-        time_min=int(config["time_min"])
+        time_min=int(config["time_min"]),
     params:
-        kmer_len=config['kmer_len'],
-        scaled=config['scaled'],
-        db_path=config['db_path'],
-        threshold_bp=config['threshold_bp'],
-        scaled_downsample=config['scaled_downsample']
+        kmer_len=config["kmer_len"],
+        scaled=config["scaled"],
+        db_path=config["db_path"],
+        threshold_bp=config["threshold_bp"],
+        scaled_downsample=config["scaled_downsample"],
     shell:
         "mkdir -p output/gather && "
         "sourmash gather "
@@ -65,4 +68,3 @@ rule gather:
         " -o {output.gather} "
         " {input.sample_sketch} "
         " {params.db_path} &> {log}"
-
