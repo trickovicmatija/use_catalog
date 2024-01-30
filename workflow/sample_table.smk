@@ -96,6 +96,18 @@ def get_files_from_sampleTable(sample, Headers):
     return list(files)
 
 
+def get_raw_reads(wildcards):
+    """Gets quality controlled reads. Two files if paired end and only one if single end."""
+
+    Headers = ["Reads_raw_" + f for f in MULTIFILE_FRACTIONS]
+    sample_dir_path = "/".join(config["sample_table"].split("/")[:-1]) + "/"
+    return [
+        sample_dir_path + s
+        for s in get_files_from_sampleTable(wildcards.sample, Headers)
+    ]
+
+
+
 def get_quality_controlled_reads(wildcards):
     """Gets quality controlled reads. Two files if paired end and only one if single end."""
 
@@ -107,43 +119,3 @@ def get_quality_controlled_reads(wildcards):
     ]
 
 
-# except FileNotInSampleTableException:
-#
-#     # return files as named by atlas pipeline
-#     return expand("{sample}/sequence_quality_control/{sample}_QC_{fraction}.fastq.gz",
-#                     fraction=fractions,sample=wildcards.sample)
-
-
-def io_params_for_bbmap(io, key="in"):
-    """This function generates the input flag needed for bbwrap/tadpole for all cases
-    possible for get_quality_controlled_reads.
-    params:
-        io  input or output element from snakemake
-        key 'in' or 'out'
-        if io contains attributes:
-            se -> in={se}
-            R1,R2,se -> in1={R1},se in2={R2}
-            R1,R2 -> in1={R1} in2={R2}
-    """
-
-    if type(io) == str:
-        io = [io]
-
-    N = len(io)
-    if N == 1:
-        flag = f"{key}1={io[0]}"
-    elif N == 2:
-        flag = f"{key}1={io[0]} {key}2={io[1]}"
-    elif N == 3:
-        flag = f"{key}1={io[0]} {key}2={io[1]}"
-    else:
-        logger.error(
-            (
-                "File input/output expectation is one of: "
-                "1 file = single-end/ interleaved paired-end "
-                "2 files = R1,R2"
-                "got: {n} files:\n{}"
-            ).format("\n".join(io), n=len(io))
-        )
-        sys.exit(1)
-    return flag
