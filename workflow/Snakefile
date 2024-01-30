@@ -7,47 +7,49 @@ include: "sample_table.smk"
 
 rule all_gather:
     input:
-        expand("output/gather/{sample}.csv", sample=SAMPLES)
+        expand("Intermediate/subspecies/gather/{sample}.csv", sample=SAMPLES)
 
 
 rule sketch_reads:
     input:
         get_quality_controlled_reads,
     output:
-        sketch="output/sketch_samples/{sample}.sig",
+        sketch="Intermediate/subspecies/sketch_samples/{sample}.sig",
     conda:
         "envs/sourmash.yaml"
     log:
-        "output/log/sketch_reads/{sample}.log",
-    threads: int(config["threads"])
+        "log/subspecies_profiler/sketch_reads/{sample}.log",
+    threads: config["threads"]
     resources:
-        mem_mb=int(config["mem_mb"]),
-        time_min=int(config["time_min"]),
-        tmpdir=config['tmp_dir'],
+        mem_mb=config["mem_mb"],
+        time_min=config["time_min"],
         cpus_per_task=config['threads']
     params:
         kmer_len=config["kmer_len"],
         scaled=config["scaled"],
-        tmp_dir=config["tmp_dir"],
         mem=int(config["mem_mb"]) * 1000000 * 0.9,
     shell:
-        "mkdir -p output/sketch_samples && "
-        "sourmash sketch dna -p k={params.kmer_len},abund,scaled={params.scaled} {input}/*.fastq.gz --merge {wildcards.sample} -o {output.sketch} &> {log}"
+        "mkdir -p output/sketch_samples "
+        " ; \n "
+        "sourmash sketch dna "
+        " -p k={params.kmer_len},abund,scaled={params.scaled} "
+        " {input}/*.fastq.gz "
+        " --merge {wildcards.sample} "
+        " -o {output.sketch} &> {log}"
 
 rule gather:
     input:
-        sample_sketch="output/sketch_samples/{sample}.sig",
+        sample_sketch= rules.sketch_reads.output
     output:
-        gather="output/gather/{sample}.csv"
+        gather="Intermediate/subspecies/gather/{sample}.csv"
     conda:
         "envs/sourmash.yaml"
     log:
-        "output/log/gather/{sample}.log"
+        "log/subspecies_profiler/gather/{sample}.log",
     threads: 1,
     resources:
         mem_mb=int(config["mem_mb"]),
-        time_min=int(config["time_min"]),
-        tmpdir=config['tmp_dir'],
+        time_min=int(config["time_min"])
     params:
         kmer_len=config['kmer_len'],
         scaled=config['scaled'],
@@ -56,5 +58,11 @@ rule gather:
         scaled_downsample=config['scaled_downsample']
     shell:
         "mkdir -p output/gather && "
-        "sourmash gather -k {params.kmer_len} --threshold-bp={params.threshold_bp} --scaled {params.scaled_downsample} -o {output.gather} {input.sample_sketch} {params.db_path} &> {log}"
+        "sourmash gather "
+        " -k {params.kmer_len} "
+        " --threshold-bp={params.threshold_bp} "
+        " --scaled {params.scaled_downsample} "
+        " -o {output.gather} "
+        " {input.sample_sketch} "
+        " {params.db_path} &> {log}"
 
