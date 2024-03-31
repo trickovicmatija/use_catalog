@@ -36,13 +36,13 @@ os.makedirs(snakemake.output[0],exist_ok=True)
 read_1 = snakemake.input[0].split("/")[-1]
 read_2 = snakemake.input[1].split("/")[-1]
 
-if snakemake.config['trim_reads'].lower() == 'true':
+if snakemake.config['trim_reads'] == True:
     shell(f"trim-low-abund.py -C 3 -Z 18 -V -M {snakemake.params.mem} -T {snakemake.params.tmp_dir} --gzip {snakemake.input[0]} {snakemake.input[1]}")
     shell(f"mv {snakemake.wildcards.sample}*.abundtrim {snakemake.output[0]}")
     shell(f"mv {snakemake.output[0]}/{read_1}.abundtrim {snakemake.output[0]}/{read_1}")
     shell(f"mv {snakemake.output[0]}/{read_2}.abundtrim {snakemake.output[0]}/{read_2}")
-elif snakemake.config['trim_reads'].lower() == 'false':
+elif snakemake.config['trim_reads'] == False:
     os.symlink(snakemake.input[0], f"{snakemake.output[0]}/{read_1}")
     os.symlink(snakemake.input[1], f"{snakemake.output[0]}/{read_2}")
 else:
-    logger.error(f"Value for 'trim_reads' can be either 'True' or 'False'!")
+    logger.error(f"Value for 'trim_reads' can be either True or False!")

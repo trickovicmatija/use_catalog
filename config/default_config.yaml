@@ -1,5 +1,5 @@
-db_path: /home/users/t/trickovi/scratch/sourmash/sourmash-hash-manipulation-21/51_100_union/output/specific_hashomes.sbt.zip
-sample_table: /home/users/t/trickovi/shared_scratch/datasets/CAMI/new_posthumgut/samples.tsv
+db_path: /home/users/t/trickovi/scratch/sourmash/use_catalog/resources/specific_hashomes.sbt.zip
+sample_table: /home/users/t/trickovi/scratch/cami_simulation/sourmash_based_subspecies_simulation/after_recovery/new_genomes/atlas_QC/samples.tsv
 trim_reads: False
 
 
@@ -11,6 +11,6 @@ threshold_bp: 15000
 
 #RESOURCES
 tmp_dir: /scratch
-mem_mb: 24000
-time_min: 120
+mem_mb: 48000
+time_min: 240
 threads: 1

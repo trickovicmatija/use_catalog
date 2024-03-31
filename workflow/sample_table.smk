@@ -101,6 +101,7 @@ def get_quality_controlled_reads(wildcards):
 
     QC_Headers = ["Reads_QC_" + f for f in MULTIFILE_FRACTIONS]
     sample_dir_path = "/".join(config["sample_table"].split("/")[:-1]) + "/"
+    #sample_dir_path = ""
     return [
         sample_dir_path + s
         for s in get_files_from_sampleTable(wildcards.sample, QC_Headers)

@@ -45,6 +45,8 @@ rule sketch_reads:
         "sourmash"
     log:
         "output/log/sketch_reads/{sample}.log",
+    benchmark:
+        "output/benchmark/sketch_reads/{sample}.txt",
     threads: int(config["threads"])
     resources:
         mem_mb=int(config["mem_mb"]),
@@ -69,6 +71,8 @@ rule gather:
         "sourmash"
     log:
         "output/log/gather/{sample}.log"
+    benchmark:
+        "output/benchmark/gather/{sample}.txt"
     threads: 1,
     resources:
         mem_mb=int(config["mem_mb"]),
